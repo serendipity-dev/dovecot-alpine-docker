@@ -1,34 +1,26 @@
-# This file is commonly accessed via passdb {} or userdb {} section in
-# conf.d/auth-ldap.conf.ext
-
-# This file is opened as root, so it should be owned by root and mode 0600.
-#
-# https://doc.dovecot.org/configuration_manual/authentication/ldap/
-#
-# NOTE: If you're not using authentication binds, you'll need to give
-# dovecot-auth read access to userPassword field in the LDAP server.
-# With OpenLDAP this is done by modifying /etc/ldap/slapd.conf. There should
-# already be something like this:
-
-# access to attribute=userPassword
-#        by dn="<dovecot's dn>" read # add this
-#        by anonymous auth
-#        by self write
-#        by * none
-
 # Space separated list of LDAP hosts to use. host:port is allowed too.
-#hosts =
-
-# LDAP URIs to use. You can use this instead of hosts list. Note that this
-# setting isn't supported by all LDAP libraries.
-#uris = 
+hosts = %LDAP_HOST_ADDR%:%LDAP_HOST_PORT%
 
 # Distinguished Name - the username used to login to the LDAP server.
 # Leave it commented out to bind anonymously (useful with auth_bind=yes).
-#dn = 
+dn = uid=%DOVECOT_USER_UID%,ou=%DOVECOT_USER_OU%,%SUFFIX%
 
 # Password for LDAP server, if dn is specified.
-#dnpass = 
+dnpass = %DOVECOT_USER_PWD% 
+
+# LDAP protocol version to use.
+ldap_version = 3
+
+# LDAP base. %variables can be used here.
+# For example: dc=mail, dc=example, dc=org
+base = ou=%MAIL_USERS_OU%,%SUFFIX%
+
+# Dereference: never, searching, finding, always
+deref = never
+
+# Search scope: base, onelevel, subtree
+scope = subtree
+
 
 # Use SASL binding instead of the simple binding. Note that this changes
 # ldap_version automatically to be 3 if it's lower.
@@ -84,18 +76,8 @@
 #
 #auth_bind_userdn =
 
-# LDAP protocol version to use. Likely 2 or 3.
-#ldap_version = 3
 
-# LDAP base. %variables can be used here.
-# For example: dc=mail, dc=example, dc=org
-base =
 
-# Dereference: never, searching, finding, always
-#deref = never
-
-# Search scope: base, onelevel, subtree
-#scope = subtree
 
 # User attributes are given in LDAP-name=dovecot-internal-name list. The
 # internal names are:
