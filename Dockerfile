@@ -33,7 +33,7 @@ RUN sed -i -e 's,!include auth-system.conf.ext,!include auth-ldap.conf.ext,' \
 	/etc/dovecot/conf.d/10-auth.conf
 
 # Copy LDAP configuration
-COPY dovecot-ldap.conf.ext /etc/dovecot/dovecot-ldap.conf.ext
+COPY scripts/* /etc/dovecot/
 
 # Set default mail location to "/var/lib/mail"
 RUN sed -i -e 's,#mail_location =,mail_location = /var/lib/mail/%n,' \
@@ -50,4 +50,7 @@ RUN find /var/cache/apk /tmp -mindepth 1 -delete
 # 4190: ManageSieve (StartTLS)
 EXPOSE 24 110 143 993 995 4190
 
-CMD ["dovecot -F"]
+VOLUME ["/mail", "/var/lib/mail"]
+VOLUME ["/certs", "/etc/ssl/dovecot"]
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
