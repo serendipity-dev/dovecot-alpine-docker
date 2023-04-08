@@ -150,4 +150,4 @@ base =
 # keep 8 requests pipelined for the LDAP connection, while with blocking=yes
 # each connection has a maximum of 1 request running. For small systems the
 # blocking=no is sufficient and uses less resources.
-#blocking = no
+#blocking = no 
