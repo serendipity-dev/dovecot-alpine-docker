@@ -21,6 +21,42 @@ deref = never
 # Search scope: base, onelevel, subtree
 scope = subtree
 
+# User attributes are given in LDAP-name=dovecot-internal-name list. The
+# internal names are:
+#   uid - System UID
+#   gid - System GID
+#   home - Home directory
+#   mail - Mail location
+#
+# There are also other special fields which can be returned, see
+# https://doc.dovecot.org/configuration_manual/authentication/user_database_extra_fields/
+user_attrs = homeDirectory=home,uidNumber=uid,gidNumber=gid
+
+# Filter for user lookup. Some variables can be used (see
+# https://doc.dovecot.org/configuration_manual/config_file/config_variables/
+# for full list):
+#   %u - username
+#   %n - user part in user@domain, same as %u if there's no domain
+#   %d - domain part in user@domain, empty if user there's no domain
+user_filter = (&(objectClass=posixAccount)(uid=%u))
+
+# Password checking attributes:
+#  user: Virtual user name (user@domain), if you wish to change the
+#        user-given username to something else
+#  password: Password, may optionally start with {type}, eg. {crypt}
+# There are also other special fields which can be returned, see
+# https://doc.dovecot.org/configuration_manual/authentication/password_database_extra_fields/
+pass_attrs = uid=user,userPassword=password
+
+# Filter for password lookups
+pass_filter = (&(objectClass=posixAccount)(uid=%u))
+
+# Default password scheme. "{scheme}" before password overrides this.
+# List of supported schemes is in:
+# https://doc.dovecot.org/configuration_manual/authentication/
+default_pass_scheme = CRYPT
+
+#-----------------------------------------------------------------------
 
 # Use SASL binding instead of the simple binding. Note that this changes
 # ldap_version automatically to be 3 if it's lower.
@@ -76,36 +112,6 @@ scope = subtree
 #
 #auth_bind_userdn =
 
-
-
-
-# User attributes are given in LDAP-name=dovecot-internal-name list. The
-# internal names are:
-#   uid - System UID
-#   gid - System GID
-#   home - Home directory
-#   mail - Mail location
-#
-# There are also other special fields which can be returned, see
-# https://doc.dovecot.org/configuration_manual/authentication/user_database_extra_fields/
-#user_attrs = homeDirectory=home,uidNumber=uid,gidNumber=gid
-
-# Filter for user lookup. Some variables can be used (see
-# https://doc.dovecot.org/configuration_manual/config_file/config_variables/
-# for full list):
-#   %u - username
-#   %n - user part in user@domain, same as %u if there's no domain
-#   %d - domain part in user@domain, empty if user there's no domain
-#user_filter = (&(objectClass=posixAccount)(uid=%u))
-
-# Password checking attributes:
-#  user: Virtual user name (user@domain), if you wish to change the
-#        user-given username to something else
-#  password: Password, may optionally start with {type}, eg. {crypt}
-# There are also other special fields which can be returned, see
-# https://doc.dovecot.org/configuration_manual/authentication/password_database_extra_fields/
-#pass_attrs = uid=user,userPassword=password
-
 # If you wish to avoid two LDAP lookups (passdb + userdb), you can use
 # userdb prefetch instead of userdb ldap in dovecot.conf. In that case you'll
 # also have to include user_attrs in pass_attrs field prefixed with "userdb_"
@@ -113,17 +119,9 @@ scope = subtree
 #pass_attrs = uid=user,userPassword=password,\
 #  homeDirectory=userdb_home,uidNumber=userdb_uid,gidNumber=userdb_gid
 
-# Filter for password lookups
-#pass_filter = (&(objectClass=posixAccount)(uid=%u))
-
 # Attributes and filter to get a list of all users
 #iterate_attrs = uid=user
 #iterate_filter = (objectClass=posixAccount)
-
-# Default password scheme. "{scheme}" before password overrides this.
-# List of supported schemes is in:
-# https://doc.dovecot.org/configuration_manual/authentication/
-#default_pass_scheme = CRYPT
 
 # By default all LDAP lookups are performed by the auth master process.
 # If blocking=yes, auth worker processes are used to perform the lookups.
