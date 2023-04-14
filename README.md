@@ -1,6 +1,8 @@
 # dovecot-alpine-docker
 Public Docker image running an Dovecot server on Alpine Linux set up to use an OpenLDAP
 
+Default env values:
+
 
 ENV LDAP_HOST_ADDR "127.0.0.1"
 
