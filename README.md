@@ -18,4 +18,4 @@ ENV SUFFIX "dc=example,dc=com"
 
 ENV PEM_CERT_FILENAME "server.pem"
 
-ENV KEY_CERT_FILENAMEL "server.key"
+ENV KEY_CERT_FILENAME "server.key"
