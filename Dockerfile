@@ -36,8 +36,18 @@ RUN sed -i -e 's,!include auth-system.conf.ext,!include auth-ldap.conf.ext,' \
 COPY scripts/* /etc/dovecot/
 
 # Set default mail location to "/var/lib/mail"
-RUN sed -i -e 's,#mail_location =,mail_location = /var/lib/mail/%n,' \
+RUN sed -i -e 's,#mail_location =,mail_location = mbox:/var/mail/%u,' \
 	/etc/dovecot/conf.d/10-mail.conf
+
+
+# Set base dir
+RUN sed -i -e 's,#base_dir = /var/run/dovecot/,base_dir = /var/run/dovecot/,' \
+	/etc/dovecot/dovecot.conf
+
+# Enable imap protocol
+RUN sed -i -e 's,#protocols = imap,protocols = imap,' \
+	/etc/dovecot/dovecot.conf
+
 
 # Remove left-over temporary files
 RUN find /var/cache/apk /tmp -mindepth 1 -delete
