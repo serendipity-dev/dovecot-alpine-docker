@@ -60,7 +60,7 @@ RUN find /var/cache/apk /tmp -mindepth 1 -delete
 # 4190: ManageSieve (StartTLS)
 EXPOSE 24 110 143 993 995 4190
 
-VOLUME ["/mail", "/var/lib/mail"]
+VOLUME ["/mail", "/var/mail"]
 VOLUME ["/certs", "/etc/ssl/dovecot"]
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
