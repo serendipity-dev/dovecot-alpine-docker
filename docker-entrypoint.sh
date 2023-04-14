@@ -8,47 +8,58 @@ DOVECOT_LDAP_CONF="/etc/dovecot/dovecot-ldap.conf.ext"
 sed -i "s~%ROOT_USER%~$ROOT_USER~g" "$DOVECOT_LDAP_CONF"
 sed -i "s~%SUFFIX%~$SUFFIX~g" "$DOVECOT_LDAP_CONFF"
 sed -i "s~%ACCESS_CONTROL%~$ACCESS_CONTROL~g" "$DOVECOT_LDAP_CONF"
+sed -i "s~%LDAP_HOST_ADDR%~$LDAP_HOST_ADDR~g" "$DOVECOT_LDAP_CONF"
+sed -i "s~%LDAP_HOST_PORT%~$LDAP_HOST_PORT~g" "$DOVECOT_LDAP_CONF"
+sed -i "s~%DOVECOT_USER_OU%~$DOVECOT_USER_OU~g" "$DOVECOT_LDAP_CONF"
+sed -i "s~%DOVECOT_USER_UID%~$DOVECOT_USER_UID~g" "$DOVECOT_LDAP_CONF"
+sed -i "s~%DOVECOT_USER_PWD%~$DOVECOT_USER_PWD~g" "$DOVECOT_LDAP_CONF"
+sed -i "s~%MAIL_USERS_OU%~$MAIL_USERS_OU~g" "$DOVECOT_LDAP_CONF"
+sed -i "s~%SUFFIX%~$SUFFIX~g" "$DOVECOT_LDAP_CONF"
 
-# encrypt root password before replacing
-#ROOT_PW=$(slappasswd -s "$ROOT_PW")
-sed -i "s~%ROOT_PW%~$ROOT_PW~g" "$SLAPD_CONF"
+# replace variables in 10-ssl.conf
+DOVECOT_SSL_CONF="/etc/dovecot/conf.d/10-ssl.conf"
 
-# replace variables in organisation configuration
-ORG_CONF="/etc/openldap/organisation.ldif"
-sed -i "s~%SUFFIX%~$SUFFIX~g" "$ORG_CONF"
-sed -i "s~%ORGANISATION_NAME%~$ORGANISATION_NAME~g" "$ORG_CONF"
+sed -i "s~%PEM_CERT_FILENAME%~$PEM_CERT_FILENAME~g" "$DOVECOT_SSL_CONF"
+sed -i "s~%KEY_CERT_FILENAME%~$KEY_CERT_FILENAME~g" "$DOVECOT_SSL_CONF"
 
-# replace variables in user configuration
-USER_CONF="/etc/openldap/users.ldif"
-sed -i "s~%SUFFIX%~$SUFFIX~g" "$USER_CONF"
-sed -i "s~%USER_UID%~$USER_UID~g" "$USER_CONF"
-sed -i "s~%USER_GIVEN_NAME%~$USER_GIVEN_NAME~g" "$USER_CONF"
-sed -i "s~%USER_SURNAME%~$USER_SURNAME~g" "$USER_CONF"
-if [ -z "$USER_PW" ]; then USER_PW="password"; fi
-sed -i "s~%USER_PW%~$USER_PW~g" "$USER_CONF"
-sed -i "s~%USER_EMAIL%~$USER_EMAIL~g" "$USER_CONF"
+# Parse dovecot version string from the APK database
+DOVECOT_VERSION_STRING="$(
+	awk -- '
+		BEGIN {
+			PKGID  = ""
+			PKGNAM = ""
+			PKGVER = ""
+			
+			FS = ":"
+		}
+		
+		{
+			if($1 == "C") {
+				PKGID  = $2
+			} else if($1 == "P") {
+				PKGNAM = $2
+			} else if($1 == "V") {
+				PKGVER = $2
+			}
+			
+			if(PKGID && PKGNAM && PKGVER) {
+				if(PKGNAM == "dovecot") {
+					print PKGNAM "-" PKGVER "." PKGID
+				}
+				
+				PKGID  = ""
+				PKGNAM = ""
+				PKGVER = ""
+			}
+		}
+	' /lib/apk/db/installed)"
 
-# add organisation and users to ldap (order is important)
-slapadd -l "$ORG_CONF"
-slapadd -l "$USER_CONF"
+# Re-run dovecot post-install script (to generate the TLS certificates if they're missing)
+tar -xf "/lib/apk/db/scripts.tar" "${DOVECOT_VERSION_STRING}.post-install" -O | sh
 
-# add any scripts in ldif
-for l in /ldif/*; do
-  case "$l" in
-    *.ldif)  echo "ENTRYPOINT: adding $l";
-            slapadd -l $l
-            ;;
-    *)      echo "ENTRYPOINT: ignoring $l" ;;
-  esac
-done
-
-if [ "$LDAPS" = true ]; then
-  echo "Starting LDAPS"
-  slapd -d "$LOG_LEVEL" -h "ldaps:///"
-else
-  echo "Starting LDAP"
-  slapd -d "$LOG_LEVEL" -h "ldap:///"
-fi
+# Start Dovecot as usual
+echo "Starting Dovecot"
+dovecot -F
 
 # run command passed to docker run
 exec "$@"
