@@ -6,7 +6,7 @@ hosts = %LDAP_HOST_ADDR%:%LDAP_HOST_PORT%
 dn = uid=%DOVECOT_USER_UID%,ou=%DOVECOT_USER_OU%,%SUFFIX%
 
 # Password for LDAP server, if dn is specified.
-dnpass = %DOVECOT_USER_PWD% 
+dnpass = %DOVECOT_USER_PWD%
 
 # LDAP protocol version to use.
 ldap_version = 3
