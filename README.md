@@ -1,5 +1,5 @@
 # dovecot-alpine-docker
-Public Docker image running an Dovecot server on Alpine Linux
+Public Docker image running an Dovecot server on Alpine Linux set up to use an OpenLDAP
 
 
 ENV LDAP_HOST_ADDR ""
