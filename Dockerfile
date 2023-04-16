@@ -64,6 +64,8 @@ RUN sed -i -e '/inbox = yes/r /etc/dovecot/mailbox.conf.ext' \
 # Remove left-over temporary files
 RUN find /var/cache/apk /tmp -mindepth 1 -delete
 
+COPY docker-entrypoint.sh /
+
 #   24: LMTP
 #  110: POP3 (StartTLS)
 #  143: IMAP4 (StartTLS)
