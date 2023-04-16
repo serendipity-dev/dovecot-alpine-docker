@@ -54,7 +54,7 @@ DOVECOT_VERSION_STRING="$(
 # Re-run dovecot post-install script (to generate the TLS certificates if they're missing)
 tar -xf "/lib/apk/db/scripts.tar" "${DOVECOT_VERSION_STRING}.post-install" -O | sh
 
-# Start Dovecot as usual
+# Start Dovecot 
 echo "Starting Dovecot"
 dovecot -F
 
