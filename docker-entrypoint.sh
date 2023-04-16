@@ -5,9 +5,6 @@
 # replace variables in dovecot-ldap.conf.ext
 DOVECOT_LDAP_CONF="/etc/dovecot/dovecot-ldap.conf.ext"
 
-sed -i "s~%ROOT_USER%~$ROOT_USER~g" "$DOVECOT_LDAP_CONF"
-sed -i "s~%SUFFIX%~$SUFFIX~g" "$DOVECOT_LDAP_CONFF"
-sed -i "s~%ACCESS_CONTROL%~$ACCESS_CONTROL~g" "$DOVECOT_LDAP_CONF"
 sed -i "s~%LDAP_HOST_ADDR%~$LDAP_HOST_ADDR~g" "$DOVECOT_LDAP_CONF"
 sed -i "s~%LDAP_HOST_PORT%~$LDAP_HOST_PORT~g" "$DOVECOT_LDAP_CONF"
 sed -i "s~%DOVECOT_USER_OU%~$DOVECOT_USER_OU~g" "$DOVECOT_LDAP_CONF"
