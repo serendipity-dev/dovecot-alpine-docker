@@ -19,3 +19,4 @@
     auto = create # autocreate Spam, but don't autosubscribe
     special_use = \Junk
   }
+  
