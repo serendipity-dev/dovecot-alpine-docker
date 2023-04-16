@@ -31,10 +31,10 @@ RUN apk add --no-cache \
 # Re-enable the default Dovecot TLS configuration
 RUN rm /etc/dovecot/local.conf
 
-# Set logging to STDOUT/STDERR
-RUN sed -i -e 's,#log_path = syslog,log_path = /dev/stderr,' \
-           -e 's,#info_log_path =,info_log_path = /dev/stdout,' \
-           -e 's,#debug_log_path =,debug_log_path = /dev/stdout,' \
+# Set logging 
+RUN sed -i -e 's,#log_path = syslog,log_path = /var/log/dovecot.out,' \
+           -e 's,#info_log_path =,info_log_path = /var/log/dovecot.out,' \
+           -e 's,#debug_log_path =,debug_log_path = /var/log/dovecot.out,' \
 	/etc/dovecot/conf.d/10-logging.conf
 
 # Set default passdb to ldap 
@@ -75,6 +75,6 @@ RUN chmod +x /docker-entrypoint.sh
 # 4190: ManageSieve (StartTLS)
 EXPOSE 24 110 143 993 995 4190
 
-VOLUME ["/var/mail", "/etc/ssl/dovecot"]
+VOLUME ["/var/mail", "/etc/ssl/dovecot", "/var/log"]
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
