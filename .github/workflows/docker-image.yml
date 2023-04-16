@@ -1,0 +1,25 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build-publish:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build-Publish the Docker image
+      env:
+        tag_version: 0.${{ github.run_number }}.${{ github.run_attempt }}
+      run: |
+        docker build . --file Dockerfile --tag hakni/dovecot-alpine:latest --tag hakni/dovecot-alpine:$tag_version --tag hakni/dovecot-alpine:3.17.2-$tag_version
+        docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin <<< ${{ secrets.DOCKERHUB_PASSWORD }}
+        docker push --all-tags hakni/dovecot-alpine
+
+      
