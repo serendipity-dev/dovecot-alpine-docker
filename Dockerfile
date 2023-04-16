@@ -65,7 +65,7 @@ RUN sed -i -e '/inbox = yes/r /etc/dovecot/mailbox.conf.ext' \
 RUN find /var/cache/apk /tmp -mindepth 1 -delete
 
 COPY docker-entrypoint.sh /
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 #   24: LMTP
 #  110: POP3 (StartTLS)
