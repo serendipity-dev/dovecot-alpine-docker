@@ -55,7 +55,7 @@ RUN sed -i -e 's,#protocols = imap,protocols = imap,' \
 	/etc/dovecot/dovecot.conf
 
 # Copy LDAP, SSL and MAILBOX configuration
-COPY scripts/* /etc/dovecot/
+COPY scripts/ /etc/dovecot/
 
 # Set autocreate of Trash and Sent folders in mailbox
 RUN sed -i -e '/inbox = yes/r /etc/dovecot/mailbox.conf.ext' \
