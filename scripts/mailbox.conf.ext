@@ -1,0 +1,10 @@
+
+  mailbox Trash {
+    auto = subscribe # autocreate and autosubscribe the Trash mailbox
+    special_use = \Trash
+  }
+  mailbox Sent {
+    auto = subscribe # autocreate and autosubscribe the Sent mailbox
+    special_use = \Sent
+  }
+  
